@@ -88,8 +88,20 @@ public class NumberTriangle {
      *
      */
     public int retrieve(String path) {
-        // TODO implement this method
-        return -1;
+        if (path.isEmpty()) {
+            return this.root;
+        }
+
+        NumberTriangle current = this;
+        for (int i = 0; i < path.length(); i++) {
+            char direction = path.charAt(i);
+            if (direction == 'l') {
+                current = current.left;
+            } else if (direction == 'r') {
+                current = current.right;
+            }
+        }
+        return current.root;
     }
 
     /** Read in the NumberTriangle structure from a file.
@@ -110,7 +122,7 @@ public class NumberTriangle {
         BufferedReader br = new BufferedReader(new InputStreamReader(inputStream));
 
 
-        // TODO define any variables that you want to use to store things
+        java.util.List<java.util.List<NumberTriangle>> rows = new java.util.ArrayList<>();
 
         // will need to return the top of the NumberTriangle,
         // so might want a variable for that.
@@ -122,13 +134,27 @@ public class NumberTriangle {
             // remove when done; this line is included so running starter code prints the contents of the file
             System.out.println(line);
 
-            // TODO process the line
+            String[] parts = line.trim().split("\\s+");
+            java.util.List<NumberTriangle> currentRow = new java.util.ArrayList<>();
+            for (String part : parts) {
+                currentRow.add(new NumberTriangle(Integer.parseInt(part)));
+            }
+            rows.add(currentRow);
 
             //read the next line
             line = br.readLine();
         }
         br.close();
-        return top;
+        for (int i = 0; i < rows.size() - 1; i++) {
+            java.util.List<NumberTriangle> current = rows.get(i);
+            java.util.List<NumberTriangle> below = rows.get(i + 1);
+            for (int j = 0; j < current.size(); j++) {
+                current.get(j).setLeft(below.get(j));
+                current.get(j).setRight(below.get(j + 1));
+            }
+        }
+
+        return rows.get(0).get(0);
     }
 
     public static void main(String[] args) throws IOException {
